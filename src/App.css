@@ -11,8 +11,11 @@ table tr:nth-child(even){
 table tr:nth-child(2n-1){
     background: skyblue;
 }
+table thead{
+    background : red;
+}
 .basic {
-    color: white;
+    color: black;
     background-color: blue;
     text-align: center;
 }

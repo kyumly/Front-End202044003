@@ -1,13 +1,9 @@
-import ReactDOM from 'react-dom';
 import React from "react";
-import styles from './App.css'
 import $ from "jquery";
 import "./Model/Setting.js"
 import SetTbody from "./Model/Setting";
 import StudentScore from "./Model/StudentScore";
-import * as events from "events";
-import {calculateNewValue} from "@testing-library/user-event/dist/utils";
-import {tab} from "@testing-library/user-event/dist/tab";
+
 
 
 
@@ -35,16 +31,82 @@ class ScoreTable extends React.Component{
 
 
     componentDidMount() {
-        let tableId = this.state.tableId
-        let table = document.getElementById(tableId)
+
+        let scoreDict = {}
+        scoreDict['attendance'] = 0
+        scoreDict["assignment"] = 0
+        scoreDict["midScore"] = 0
+        scoreDict["finalScore"] = 0
+        let total = 0;
+        let pass;
         $(document).ready(function(){
 
-            $("input:text[numberOnly]").on("keyup", function() {
+
+
+            $("input:text[numberOnly]").on("keydown", function() {
                 $(this).val($(this).val().replace(/[^0-9]/g,""));
             });
 
-        });
+            function sum() {
+                total = scoreDict['attendance'] + scoreDict['assignment'] + scoreDict["midScore"] + scoreDict["finalScore"]
+                console.log(total)
+                if(total > 100){
+                    alert("100점을 초과했습니다.")
+                }
+            }
 
+            function passMask(){
+                if(pass.toUpperCase() === "P" || pass.toUpperCase() === "NP"){
+                    console.log(scoreDict.attendance)
+                    console.log(scoreDict.midScore)
+                    console.log(scoreDict.assignment)
+                    console.log(scoreDict.finalScore)
+
+                    if(scoreDict.attendance !== 0 || scoreDict.midScore !== 0 || scoreDict. assignment !== 0 || scoreDict.finalScore !== 0){
+                        alert("P/NP 입력하기 위해서는 출석/과제/중간/기말 값을 넣지 마세요.")
+                        return true
+                    }
+                }
+                return false
+            }
+
+            function nanCheck(key) {
+                if (isNaN(scoreDict[key])) {
+                    scoreDict[key] = 0
+                }
+            }
+
+            $('input[name=attendance]').on("keyup", function (){
+                scoreDict.attendance = parseInt($(this).val())
+                nanCheck("attendance");
+                sum();
+            });
+
+            $('input[name=assignment]').on("keyup", function (){
+                scoreDict.assignment = parseInt($(this).val())
+                nanCheck("assignment");
+                sum();
+            });
+
+            $('input[name=midScore]').on("keyup", function (){
+                scoreDict.midScore = parseInt($(this).val())
+                nanCheck("midScore");
+                sum();
+            });
+            $('input[name=finalScore]').on("keyup", function (){
+                scoreDict.finalScore = parseInt($(this).val())
+                nanCheck("finalScore");
+                sum();
+            });
+
+            $('select[name=StudentScore]').on("change",function (){
+                pass = this.value
+                if(passMask()){
+                    $(this).val("1").prop("selected", true)
+                }
+            })
+
+        });
 
 
     }
@@ -59,6 +121,7 @@ class ScoreTable extends React.Component{
         $(tbody).append(SetTbody)
         this.state.saveMask = 1
         this.componentDidMount()
+
     }
 
     setSave = () =>{
@@ -76,7 +139,7 @@ class ScoreTable extends React.Component{
 
 
         //딕셔너리 형태로 값 넣기
-        dict['esu'] = td[1].lastChild.value
+        dict['esu'] = td[1].childNodes[0].value
         dict['essential'] = td[2].lastChild.value
         dict['subjectName'] = td[3].lastChild.value
         dict['credit'] = td[4].lastChild.value
@@ -91,20 +154,31 @@ class ScoreTable extends React.Component{
 
         //조건
         if(this.flag(dict, sum)){
-            console.log("test")
             return
         }
 
 
+        console.log(dict)
+
         //테이블안에 그리기
         this.grid_table(dict, td)
-
-        if(sum <= 60 || td[11].lastChild.value === "NP"){
+        console.log(td[11].innerText)
+        if(sum < 60 || td[11].innerText === "NP"){
             td[11].parentNode.style.backgroundColor = "red"
         }
         let hakjum = this.getScore(sum)
-        td[9].innerText = sum
-        td[11].innerHTML = hakjum
+
+
+        if(!td[11].innerText){
+            td[9].innerText = sum
+            td[11].innerHTML = hakjum
+            console.log("있음")
+
+        }else{
+            console.log("없음")
+        }
+
+
 
 
         this.grid_tfoot(tbody)
@@ -112,8 +186,56 @@ class ScoreTable extends React.Component{
 
     }
 
+    setDelete = (tableId) =>{
+        console.log(tableId)
+        let body= document.getElementById(tableId).getElementsByTagName("tbody")
+        let tr = document.getElementById(tableId).getElementsByTagName("tbody")[0].getElementsByTagName("tr")
+
+
+        console.log(tr)
+        console.log(typeof(tr))
+
+
+        let count = 0
+
+        for(let i =0; i<tr.length; i++){
+            let mask = tr[i].getElementsByTagName("td")[0].lastChild.checked
+            if(mask){
+                count +=1
+            }
+        }
+
+        let mask;
+        console.log(count)
+        if(count === 0){
+            return
+        }else{
+            mask = window.confirm(count+"건을 삭제 ㄱㄱ??")
+        }
+
+        if(mask){
+            while (true){
+                for(let i =0; i<tr.length; i++){
+                    let mask = tr[i].getElementsByTagName("td")[0].lastChild.checked
+                    if(mask){
+                        tr[i].parentNode.removeChild(tr[i])
+                        count -=1
+                    }
+                }
+                if (count === 0){
+                    break
+                }
+            }
+            this.grid_tfoot(body)
+            this.componentDidMount()
+        }
+    }
+
+
     //
     grid_tfoot = (tbody)=> {
+        let count = 0
+
         let sumList = [4,5,6,7,8,9]
         let trs = tbody[0].getElementsByTagName("tr")
         let table = document.getElementById(this.state.tableId)
@@ -121,28 +243,49 @@ class ScoreTable extends React.Component{
 
 
 
+
+        for(let i =0; i<trs.length; i++){
+            let td = trs[i].getElementsByTagName("td")
+            let score =  td[11].innerText
+            if(score.toUpperCase() === "NP" || score.toUpperCase() === "P"){
+                count +=1
+            }
+        }
+
+
         let scoreList = [0,0]
         for(let list of sumList){
             let sum = 0
             for(let i =0; i<trs.length; i++){
                 let td = trs[i].getElementsByTagName("td")
-                // if(i === trs.length -1){
-                //     console.log(td[sumList[list]].lastChild.value.toString())
-                //     sum += parseInt(td[sumList[list]].lastChild.value.toString())
-                //     continue
-                // }
-                sum += parseInt(td[list].innerText.toString())
-                //console.log(td[list].innerText)
-
+                let score =  td[11].innerText
+                if(score === "NP"){
+                    break
+                }else{
+                    if(score === "P"){
+                        if(list === 4){
+                            sum += parseInt(td[list].innerText.toString())
+                        }
+                    }else{
+                        sum += parseInt(td[list].innerText.toString())
+                    }
+                }
             }
             scoreList.push(sum)
         }
-        scoreList.push(scoreList[scoreList.length-1]/trs.length)
-        scoreList.push(this.getScore(scoreList[scoreList.length -1]))
-        console.log(tfoot)
+        console.log(trs.length - count)
 
-        for(let i = 2; i<tfoot.length;i++){
-            tfoot[i].innerText = scoreList[i].toString()
+        scoreList.push(scoreList[scoreList.length-1]/(trs.length - count))
+        scoreList.push(this.getScore(scoreList[scoreList.length -1]))
+
+        if(trs.length === 0){
+            for(let i = 2; i<tfoot.length;i++){
+                tfoot[i].innerText = ""
+            }
+        }else{
+            for(let i = 2; i<tfoot.length;i++){
+                tfoot[i].innerText = scoreList[i].toString()
+            }
         }
     }
 
@@ -182,6 +325,10 @@ class ScoreTable extends React.Component{
     grid_table(dict, td) {
         let index = 1
         for (let key in dict) {
+            if(key === "StudentScore"){
+                this.grid_row(td[11], dict[key])
+                break
+            }
             this.grid_row(td[index], dict[key])
             index += 1
         }
@@ -197,10 +344,12 @@ class ScoreTable extends React.Component{
 
         let flagMask = false
 
-        console.log(sum)
         if(dict['subjectName'] === ""){
+            alert("과목명이 비워있습니다.")
             flagMask = true
         }
+
+
         if(sum > 100) {
             alert("출석 + 과제 + 중간 + 기말 점수가 100점 이상입니다")
             flagMask = true
@@ -222,53 +371,82 @@ class ScoreTable extends React.Component{
             flagMask = true;
         }
 
-
+        if(this.subjectNameFlag(dict['subjectName'])){
+            alert("과목명이 중복됩니다.")
+            flagMask = true
+        }
 
         return flagMask
 
     }
 
-    subjectNameFlag = () =>{
+    subjectNameFlag = (subjectInput) =>{
         let one = document.getElementById("tableId1")
         let two = document.getElementById("tableId2")
         let three = document.getElementById("tableId3")
 
+        let tableList = []
         let subjectNameList = []
 
+        let result = false
 
 
-        let tbody = one.getElementsByTagName("tbody")
-         console.log(tbody[0].childNodes.length)
+        let oneTbody = one.getElementsByTagName("tbody")
+        let twoTbody = two.getElementsByTagName("tbody")
+        let threeTbody = three.getElementsByTagName("tbody")
+
+        console.log(oneTbody[0].parentNode.id)
+
+
+        tableList.push(oneTbody, twoTbody, threeTbody)
+
+        for (let table of tableList){
+            if(this.state.tableId === table[0].parentNode.id){
+                this.subjectName(table, subjectNameList, table[0].childNodes.length-1);
+
+            }else{
+                this.subjectName(table, subjectNameList, table[0].childNodes.length);
+                console.log(subjectNameList)
+            }
+        }
+
+        for(let name of subjectNameList){
+            if(name === subjectInput){
+                result = true
+            }
+        }
+        return result
     }
 
 
-
-
+    subjectName(table, subjectNameList, size) {
+        for (let i = 0; i < size; i++) {
+            let name
+            let score = table[0].childNodes[i].childNodes[11].innerText
+            if (score.toUpperCase() === "NP" || score.toUpperCase() === "F") {
+                continue
+            } else {
+                name = table[0].childNodes[i].childNodes[3].innerText
+            }
+            name = table[0].childNodes[i].childNodes[3].innerText
+            subjectNameList.push(name)
+        }
+    }
 
     render() {
-        const button_css = {
-            float: "right",
-            marginLeft : "10px",
-            background : "gray",
-            fontSize: "18px",
-            marginBottom: "10px",
-            color: "white"
-        }
-
-
         return (
 
 
             <div>
                 <span style={{fontSize : "20px"}}>{this.state.schoolYear}학년</span>
-                <input style={button_css} type="button" value="저장" onClick={() => this.setSave(this.state.tableId)}/>
-                <input style={button_css} type="button" value="삭제" onClick={() => this.setDelete(this.state.tableId)}/>
-                <input style={button_css} type="button" value="추가" onClick={() => this.setInsert(this.state.tableId)}/>
+                <input className="button_css" type="button" value="저장" onClick={() => this.setSave(this.state.tableId)}/>
+                <input className="button_css" type="button" value="삭제" onClick={() => this.setDelete(this.state.tableId)}/>
+                <input className="button_css" type="button" value="추가" onClick={() => this.setInsert(this.state.tableId)}/>
             <table border={1} width={"100%"} id={this.state.tableId}>
 
 
                 <thead>
-                <tr className={styles.basic}>
+                <tr className="basic" style={{background : "skyblue"}}>
                     <td>선택</td>
                     <td>이수</td>
                     <td>필수</td>
@@ -288,7 +466,7 @@ class ScoreTable extends React.Component{
                 </tbody>
 
                 <tfoot>
-                <tr className={styles.bottom}>
+                <tr className="bottom" style={{background : "#f2f2f2"}}>
                     <td></td>
                     <td colSpan="3">합 계</td>
                     <td></td>
