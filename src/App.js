@@ -4,9 +4,6 @@ import "./Model/Setting.js"
 import SetTbody from "./Model/Setting";
 import StudentScore from "./Model/StudentScore";
 
-
-
-
 class ScoreTable extends React.Component{
     constructor(props) {
         super(props);
@@ -38,15 +35,13 @@ class ScoreTable extends React.Component{
         scoreDict["midScore"] = 0
         scoreDict["finalScore"] = 0
         let total = 0;
-        let pass;
+
         $(document).ready(function(){
-
-
-
             $("input:text[numberOnly]").on("keydown", function() {
                 $(this).val($(this).val().replace(/[^0-9]/g,""));
             });
 
+            //값이 100점이 넘으면 체크하기
             function sum() {
                 total = scoreDict['attendance'] + scoreDict['assignment'] + scoreDict["midScore"] + scoreDict["finalScore"]
                 console.log(total)
@@ -55,39 +50,123 @@ class ScoreTable extends React.Component{
                 }
             }
 
-            function passMask(){
-                if(pass.toUpperCase() === "P" || pass.toUpperCase() === "NP"){
-                    console.log(scoreDict.attendance)
-                    console.log(scoreDict.midScore)
-                    console.log(scoreDict.assignment)
-                    console.log(scoreDict.finalScore)
+            //let pass;
+            // $('select[name=StudentScore]').on("change",function (){
+            //     pass = this.value
+            //     if(passMask()){
+            //         $(this).val("1").prop("selected", true)
+            //     }
+            // })
 
-                    if(scoreDict.attendance !== 0 || scoreDict.midScore !== 0 || scoreDict. assignment !== 0 || scoreDict.finalScore !== 0){
-                        alert("P/NP 입력하기 위해서는 출석/과제/중간/기말 값을 넣지 마세요.")
-                        return true
-                    }
-                }
-                return false
-            }
+            // function passMask(){
+            //     if(pass.toUpperCase() === "P" || pass.toUpperCase() === "NP"){
+            //         console.log(scoreDict.attendance)
+            //         console.log(scoreDict.midScore)
+            //         console.log(scoreDict.assignment)
+            //         console.log(scoreDict.finalScore)
+            //
+            //         if(scoreDict.attendance !== 0 || scoreDict.midScore !== 0 || scoreDict. assignment !== 0 || scoreDict.finalScore !== 0){
+            //             alert("P/NP 입력하기 위해서는 출석/과제/중간/기말 값을 넣지 마세요.")
+            //             return true
+            //         }
+            //     }
+            //     return false
+            // }
 
+            //NAN값을 0으로 치환하기
             function nanCheck(key) {
                 if (isNaN(scoreDict[key])) {
                     scoreDict[key] = 0
                 }
             }
 
+
+            function optionChange(studentScore, scoreList) {
+                let $option1 = $("<option value='' name='null'></option>")
+                let $option2 = $("<option value='P' name='P'>P</option>")
+                let $option3 = $("<option value='NP' name='NP'>NP</option>")
+
+
+                //전체 select 있는거 삭제하기
+                studentScore.children().remove()
+
+                //1학점 선택하면 PASS / NP 과목
+                if (parseInt(this.value) === 1) {
+                    studentScore.append($option2)
+                    studentScore.append($option3)
+
+                    for (let score of scoreList) {
+                        score.val("")
+                        score.attr("readonly", true)
+                    }
+
+                } else {
+                    studentScore.append($option1)
+
+                    for (let score of scoreList) {
+                        score.val("")
+                        score.attr("readonly", false)
+                    }
+                }
+            }
+            // todo 매우 줄이고싶지만.....테이블 아이디가 생명이기에 ...
+            $('#tableId1 select[name=credit]').on("change", function (){
+                let scoreList = Array()
+                let studentScore = $('#tableId1 select[name=StudentScore]')
+                let attendance = $('#tableId1 input[name=attendance]')
+                let assignment = $('#tableId1 input[name=assignment]')
+                let midScore = $('#tableId1 input[name=midScore]')
+                let finalScore = $('#tableId1 input[name=finalScore]')
+                console.log(finalScore)
+
+                scoreList.push(attendance, midScore, assignment, finalScore)
+
+                optionChange.call(this, studentScore, scoreList);
+
+            });
+
+            $('#tableId2 select[name=credit]').on("change", function (){
+                let scoreList = Array()
+
+                let studentScore = $('#tableId2 select[name=StudentScore]')
+                let attendance = $('#tableId2 input[name=attendance]')
+                let assignment = $('#tableId2 input[name=assignment]')
+                let midScore = $('#tableId2 input[name=midScore]')
+                let finalScore = $('#tableId2 input[name=finalScore]')
+                console.log(finalScore)
+
+                scoreList.push(attendance, midScore, assignment, finalScore)
+
+                optionChange.call(this, studentScore, scoreList);
+
+            });
+
+            $('#tableId3 select[name=credit]').on("change", function (){
+                let scoreList = Array()
+                let studentScore = $('#tableId3 select[name=StudentScore]')
+                let attendance = $('#tableId3 input[name=attendance]')
+                let assignment = $('#tableId3 input[name=assignment]')
+                let midScore = $('#tableId3 input[name=midScore]')
+                let finalScore = $('#tableId3 input[name=finalScore]')
+                console.log(finalScore)
+
+                scoreList.push(attendance, midScore, assignment, finalScore)
+
+                optionChange.call(this, studentScore, scoreList);
+
+            });
+
+
             $('input[name=attendance]').on("keyup", function (){
                 scoreDict.attendance = parseInt($(this).val())
                 nanCheck("attendance");
                 sum();
             });
-
             $('input[name=assignment]').on("keyup", function (){
                 scoreDict.assignment = parseInt($(this).val())
                 nanCheck("assignment");
                 sum();
             });
-
             $('input[name=midScore]').on("keyup", function (){
                 scoreDict.midScore = parseInt($(this).val())
                 nanCheck("midScore");
@@ -98,13 +177,6 @@ class ScoreTable extends React.Component{
                 nanCheck("finalScore");
                 sum();
             });
-
-            $('select[name=StudentScore]').on("change",function (){
-                pass = this.value
-                if(passMask()){
-                    $(this).val("1").prop("selected", true)
-                }
-            })
 
         });
 
@@ -157,8 +229,6 @@ class ScoreTable extends React.Component{
             return
         }
 
-
-        console.log(dict)
 
         //테이블안에 그리기
         this.grid_table(dict, td)
@@ -346,7 +416,7 @@ class ScoreTable extends React.Component{
 
         if(dict['subjectName'] === ""){
             alert("과목명이 비워있습니다.")
-            flagMask = true
+            return  true
         }
 
 
@@ -356,19 +426,29 @@ class ScoreTable extends React.Component{
         }
 
         //점수가 없다면
-        if(isNaN(parseInt(dict['assignmentScore'])) && isNaN(parseInt(dict['attendanceScore']))
-            && isNaN(parseInt(dict['midScore'])) && isNaN(parseInt(dict['finalScore']))){
+        // if(isNaN(parseInt(dict['assignmentScore'])) || isNaN(parseInt(dict['attendanceScore']))
+        //     || isNaN(parseInt(dict['midScore'])) || isNaN(parseInt(dict['finalScore']))){
+        //
+        //     if(dict['StudentScore'].toString().toUpperCase() === "P" || dict['StudentScore'].toString().toUpperCase() === "NP"){
+        //         flagMask = false;
+        //     }else{
+        //         alert("성적란에는 P, NP만 입력이 가능합니다.")
+        //         flagMask = true;
+        //     }
+        // }//점수가 있다면
+        // else if(dict['StudentScore'].toString().toUpperCase() !== "") {
+        //     alert("성적란에는 P, NP만 입력하고 출석, 과제, 중간, 기말 점수아 비어 있어야 합니다.")
+        //     flagMask = true;
+        // }
 
-            if(dict['StudentScore'].toString().toUpperCase() === "P" || dict['StudentScore'].toString().toUpperCase() === "NP"){
-                flagMask = false;
-            }else{
-                alert("성적란에는 P, NP만 입력이 가능합니다.")
-                flagMask = true;
+        if(parseInt(dict["credit"]) !== 1){
+            if(isNaN(parseInt(dict['assignmentScore'])) || isNaN(parseInt(dict['attendanceScore']))
+                     || isNaN(parseInt(dict['midScore'])) || isNaN(parseInt(dict['finalScore']))) {
+                alert("출석 /과제 / 중간 / 기말 한곳이 빠져있습니다.")
+                return true
             }
-        }//점수가 있다면
-        else if(dict['StudentScore'].toString().toUpperCase() !== "") {
-            alert("성적란에는 P, NP만 입력하고 출석, 과제, 중간, 기말 점수아 비어 있어야 합니다.")
-            flagMask = true;
+        }else{
+            console.log("사랑")
         }
 
         if(this.subjectNameFlag(dict['subjectName'])){
@@ -435,8 +515,6 @@ class ScoreTable extends React.Component{
 
     render() {
         return (
-
-
             <div>
                 <span style={{fontSize : "20px"}}>{this.state.schoolYear}학년</span>
                 <input className="button_css" type="button" value="저장" onClick={() => this.setSave(this.state.tableId)}/>

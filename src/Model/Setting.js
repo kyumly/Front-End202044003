@@ -16,26 +16,29 @@ const SetTbody ="<tr class='basic'>" +
         "<td style='text-align: left'; width='30%'>" +
             "<input type='text' name='subjectName' style='width: 95%'>"+
         "</td>" +
-        "<td>" +
-            "<input type='text' name='credit' style='width: 95%' numberOnly>"+
+        "<td width='5%'>" +
+            "<select name='credit' style='width: 95%'>"+
+                "<option value='1' selected>1</option>" +
+                "<option value='2'>2</option>" +
+                "<option value='3'>3</option>" +
+            "</select>" +
         "</td>" +
         "<td>" +
-            "<input type='text' name='attendance' style='width: 95%' numberOnly>"+
+            "<input type='text' name='attendance' readonly style='width: 95%' numberOnly>"+
         "</td>" +
         "<td>" +
-            "<input type='text' name='assignment' style='width: 95%' numberOnly>"+
+            "<input type='text' name='assignment' readonly style='width: 95%' numberOnly>"+
         "</td>" +
         "<td>" +
-            "<input type='text' name='midScore' style='width: 95%' numberOnly>"+
+            "<input type='text' name='midScore' readonly style='width: 95%' numberOnly>"+
         "</td>" +
         "<td>" +
-            "<input type='text' name='finalScore' style='width: 95%' numberOnly>"+
+            "<input type='text' name='finalScore' readonly style='width: 95%' numberOnly>"+
         "</td>" +
         "<td width='5%'></td>" +
         "<td width='5%'></td>" +
         "<td width='5%'>" +
             "<select name='StudentScore'>" +
-                "<option value='' name='null' selected></option>"+
                 "<option value='P' name='P'>P</option>"+
                 "<option value='NP' name='NP'>NP</option>"+
             "</select>" +
