@@ -40,16 +40,6 @@ class ScoreTable extends React.Component{
 
 
         $(document).ready(function(event){
-            // $("input:text[numberOnly]").on("keypress", function() {
-            //     console.log($(this).val())
-            //     let check = /^[0-9]+$/;
-            //     if(!check.test($(this).val() )){
-            //         alert("숫자만 입력 가능합니다.")
-            //         $(this).val($(this).val().replace(/[^0-9]/g,""));
-            //     }else{
-            //         alert("숫자입니다.")
-            //     }
-            // });
             $("input:text[numberOnly]").on("keyup", function() {
                 $(this).val($(this).val().replace(/[^0-9]/g,""));
             });
@@ -57,34 +47,13 @@ class ScoreTable extends React.Component{
             //값이 100점이 넘으면 체크하기
             function sum() {
                 total = scoreDict['attendance'] + scoreDict['assignment'] + scoreDict["midScore"] + scoreDict["finalScore"]
-                console.log(total)
+                //console.log(total)
                 if(total > 100){
                     alert("100점을 초과했습니다.")
+                    return true
                 }
+                return false;
             }
-
-            //let pass;
-            // $('select[name=StudentScore]').on("change",function (){
-            //     pass = this.value
-            //     if(passMask()){
-            //         $(this).val("1").prop("selected", true)
-            //     }
-            // })
-
-            // function passMask(){
-            //     if(pass.toUpperCase() === "P" || pass.toUpperCase() === "NP"){
-            //         console.log(scoreDict.attendance)
-            //         console.log(scoreDict.midScore)
-            //         console.log(scoreDict.assignment)
-            //         console.log(scoreDict.finalScore)
-            //
-            //         if(scoreDict.attendance !== 0 || scoreDict.midScore !== 0 || scoreDict. assignment !== 0 || scoreDict.finalScore !== 0){
-            //             alert("P/NP 입력하기 위해서는 출석/과제/중간/기말 값을 넣지 마세요.")
-            //             return true
-            //         }
-            //     }
-            //     return false
-            // }
 
             //NAN값을 0으로 치환하기
             function nanCheck(key) {
@@ -130,7 +99,7 @@ class ScoreTable extends React.Component{
                 let assignment = $('#tableId1 input[name=assignment]')
                 let midScore = $('#tableId1 input[name=midScore]')
                 let finalScore = $('#tableId1 input[name=finalScore]')
-                console.log(finalScore)
+                //console.log(finalScore)
 
                 scoreList.push(attendance, midScore, assignment, finalScore)
 
@@ -146,7 +115,7 @@ class ScoreTable extends React.Component{
                 let assignment = $('#tableId2 input[name=assignment]')
                 let midScore = $('#tableId2 input[name=midScore]')
                 let finalScore = $('#tableId2 input[name=finalScore]')
-                console.log(finalScore)
+                //console.log(finalScore)
 
                 scoreList.push(attendance, midScore, assignment, finalScore)
 
@@ -161,7 +130,7 @@ class ScoreTable extends React.Component{
                 let assignment = $('#tableId3 input[name=assignment]')
                 let midScore = $('#tableId3 input[name=midScore]')
                 let finalScore = $('#tableId3 input[name=finalScore]')
-                console.log(finalScore)
+                //console.log(finalScore)
 
                 scoreList.push(attendance, midScore, assignment, finalScore)
 
@@ -173,22 +142,34 @@ class ScoreTable extends React.Component{
             $('input[name=attendance]').on("keyup", function (){
                 scoreDict.attendance = parseInt($(this).val())
                 nanCheck("attendance");
-                sum();
+                if(sum()){
+                    scoreDict.attendance = 0
+                    $(this).val("0")
+                }
             });
             $('input[name=assignment]').on("keyup", function (){
                 scoreDict.assignment = parseInt($(this).val())
                 nanCheck("assignment");
-                sum();
+                if(sum()){
+                    scoreDict.assignment = 0
+                    $(this).val("0")
+                }
             });
             $('input[name=midScore]').on("keyup", function (){
                 scoreDict.midScore = parseInt($(this).val())
                 nanCheck("midScore");
-                sum();
+                if(sum()){
+                    scoreDict.midScore = 0
+                    $(this).val("0")
+                }
             });
             $('input[name=finalScore]').on("keyup", function (){
                 scoreDict.finalScore = parseInt($(this).val())
                 nanCheck("finalScore");
-                sum();
+                if(sum()){
+                    scoreDict.finalScore = 0
+                    $(this).val("0")
+                }
             });
 
         });
@@ -197,11 +178,11 @@ class ScoreTable extends React.Component{
     }
 
     setInsert = (tableId) => {
-        // if(this.state.saveMask === 1){
-        //     return alert("저장버튼을 클릭해주세요")
-        // }
+        if(this.state.saveMask === 1){
+            return alert("저장버튼을 클릭해주세요")
+        }
 
-        console.log(document)
+        //console.log(document)
         let table = document.getElementById(tableId)
         let tbody = table.childNodes[1]
         $(tbody).append(SetTbody)
@@ -246,7 +227,7 @@ class ScoreTable extends React.Component{
 
         //테이블안에 그리기
         this.grid_table(dict, td)
-        console.log(td[11].innerText)
+        //console.log(td[11].innerText)
         if(sum < 60 || td[11].innerText === "NP"){
             td[11].parentNode.style.backgroundColor = "red"
         }
@@ -256,31 +237,31 @@ class ScoreTable extends React.Component{
         if(!td[11].innerText){
             td[9].innerText = sum
             td[11].innerHTML = hakjum
-            console.log("있음")
+            //console.log("있음")
 
         }else{
-            console.log("없음")
+            //console.log("없음")
         }
 
 
         this.grid_tfoot(tbody)
-        this.sortting(tbody)
+        this.Sorting(tbody)
         this.componentDidMount()
+
+        this.state.saveMask = 0
 
     }
 
     setDelete = (tableId) =>{
-        console.log(tableId)
+
+        if(this.state.saveMask === 1){
+            alert("먼저 추가를 완료해 주세요")
+            return;
+        }
         let body= document.getElementById(tableId).getElementsByTagName("tbody")
         let tr = document.getElementById(tableId).getElementsByTagName("tbody")[0].getElementsByTagName("tr")
 
-
-        console.log(tr)
-        console.log(typeof(tr))
-
-
         let count = 0
-
         for(let i =0; i<tr.length; i++){
             let mask = tr[i].getElementsByTagName("td")[0].lastChild.checked
             if(mask){
@@ -289,11 +270,11 @@ class ScoreTable extends React.Component{
         }
 
         let mask;
-        console.log(count)
+        //console.log(count)
         if(count === 0){
             return
         }else{
-            mask = window.confirm(count+"건을 삭제 ㄱㄱ??")
+            mask = window.confirm(count+"건을 삭자하시겠습니까")
         }
 
         if(mask){
@@ -310,125 +291,96 @@ class ScoreTable extends React.Component{
                 }
             }
             this.grid_tfoot(body)
-            this.sortting(body)
+            this.Sorting(body)
             this.componentDidMount()
         }
     }
 
 
-    sortting = (tbody) =>{
+    Sorting = (tbody) =>{
         let trs = tbody[0].getElementsByTagName("tr")
         //교양수
-        let count = 0
+        let refinement = this.getSortCount(0,trs.length, trs, 1, "교양")
 
-        for (let i = 0; i < trs.length; i++) {
-            if(trs[i].getElementsByTagName("td")[1].innerText === "교양") count += 1
-        }
-        console.log((trs.length -1))
+        //console.log((trs.length -1))
         for (let i = 0; i < (trs.length - 1); i++) {
-            console.log(i)
+            //console.log(i)
             let fCell = trs[i].cells[1].innerText.toString() === "교양" ? 0 : 1;
             let sCell = trs[i + 1].cells[1].innerText.toString() === "교양" ? 0 : 1
             if (fCell > sCell) {
                 trs[0].parentNode.insertBefore(trs[i+1], trs[0]);
              }else if(i === (trs.length -2)){
-                trs[0].parentNode.insertBefore(trs[i+1], trs[count])
+                //console.log(1)
+                trs[0].parentNode.insertBefore(trs[i+1], trs[refinement])
             }
 
         }
-
-
 
         //전공 수
-        let test = trs.length - count
-
-        console.log("교양 수 : "+ count)
-        console.log("전공 수 : " + test)
+        let test = trs.length - refinement
+        // console.log("교양 수 : "+ refinement)
+        // console.log("전공 수 : " + test)
 
         //교양 선택 수
-        let count2 = 0
-
-        for (let i = 0; i < count; i++) {
-            if(trs[i].getElementsByTagName("td")[2].innerText === "선택") count2 += 1
-        }
-        for(let i=0; i<count-1; i++){
-            let fCell = trs[i].cells[2].innerText.toString() === "선택" ? 0 : 1;
-            let sCell = trs[i + 1].cells[2].innerText.toString() === "선택" ? 0 : 1
-            if (fCell > sCell) {
-                trs[0].parentNode.insertBefore(trs[i+1], trs[0]);
-            }
-        }
+        let refinement_select
+        refinement_select = this.getSortCount(0,refinement, trs, 2, "선택", );
+        this.mySorter(0,refinement, trs, "선택", 2, 0);
 
         //젠체 교양에서 선택 추출
-        console.log("교양 선택 수 " + count2)
-        //전체 교양에서 선택 빼기 : 필수
-        console.log("교양 필수 수 " + (count - count2))
+        // console.log("교양 선택 수 " + refinement_select)
+        // //전체 교양에서 선택 빼기 : 필수
+        // console.log("교양 필수 수 " + (refinement - refinement_select))
+
+        //교양 선택/ 필수 정렬
+        this.mySorterNoName(0,refinement_select, trs, 3, )
+        this.mySorterNoName(refinement_select, refinement, trs, 3 )
 
 
-        for(let i=0; i<(count2-1); i++){
-            console.log(i)
-            let fCell = trs[i].cells[3].innerText
-            let sCell = trs[i + 1].cells[3].innerText
-            if (fCell > sCell) {
-                trs[0].parentNode.insertBefore(trs[i+1], trs[i]);
-            }
-        }
+        let  majorSelect = this.getSortCount(refinement,trs.length, trs, 2, "선택")
+
+        //전공 선택 수
+        // console.log("전공 선택 수 : " + majorSelect)
+        //
+        // //전공 필수 수
+        // console.log("전공 필수 수 : " + ((trs.length-refinement)-majorSelect))
 
 
-        for(let i=count2; i<(count-1); i++){
-            console.log(i)
-            let fCell = trs[i].cells[3].innerText
-            let sCell = trs[i + 1].cells[3].innerText
-            if (fCell > sCell) {
-                trs[0].parentNode.insertBefore(trs[i + 1], trs[i]);
-            }
-        }
-
-
-
-
-
-        let  count3 = 0
-        for (let i = count; i < trs.length; i++) {
-            if(trs[i].getElementsByTagName("td")[2].innerText === "선택") count3 += 1
-        }
-        for(let i=count; i<trs.length-1; i++){
-            let fCell = trs[i].cells[2].innerText.toString() === "선택" ? 0 : 1;
-            let sCell = trs[i + 1].cells[2].innerText.toString() === "선택" ? 0 : 1
-            if (fCell > sCell) {
-                trs[0].parentNode.insertBefore(trs[i+1], trs[count]);
-            }
-        }
-
-        console.log("전공 선택 수 : " + count3)
-        console.log("전공 필수 수 : " + ((trs.length-count)-count3))
-
-
-        for(let i=count; i<(count + count3)-1; i++){
-            console.log(i)
-            let fCell = trs[i].cells[3].innerText
-            let sCell = trs[i + 1].cells[3].innerText
-            if (fCell > sCell) {
-                trs[0].parentNode.insertBefore(trs[i+1], trs[i]);
-            }
-        }
-
-
-
-        for(let i=(count + count3); i<trs.length -1; i++){
-            console.log(i)
-            let fCell = trs[i].cells[3].innerText
-            let sCell = trs[i + 1].cells[3].innerText
-            if (fCell > sCell) {
-                trs[0].parentNode.insertBefore(trs[i + 1], trs[i]);
-            }
-        }
-
-
-
-
+        this.mySorter(refinement, trs.length, trs, "선택", 2, refinement)
+        this.mySorterNoName(refinement, (refinement + majorSelect), trs,3)
+        this.mySorterNoName((refinement+majorSelect), trs.length, trs,3)
     }
-    //
+
+    // count 갯수, trs, name 교양/전공/선택/필수, index td 번호, appnedIndex, 어디로 옮긴건지
+    mySorter(start,end, trs, name, index, appendIndex) {
+        for (let i = start; i < end - 1; i++) {
+            let fCell = trs[i].cells[index].innerText.toString() === name ? 0 : 1;
+            let sCell = trs[i + 1].cells[index].innerText.toString() === name ? 0 : 1
+            if (fCell > sCell) {
+                trs[0].parentNode.insertBefore(trs[i + 1], trs[appendIndex]);
+            }
+        }
+    }
+
+    mySorterNoName(start, end, trs,index) {
+        for (let i = start; i < (end - 1); i++) {
+            // console.log(i)
+            let fCell = trs[i].cells[index].innerText
+            let sCell = trs[i + 1].cells[index].innerText
+            if (fCell > sCell) {
+                trs[0].parentNode.insertBefore(trs[i + 1], trs[i]);
+            }
+        }
+    }
+
+    getSortCount(start, end, trs, index, name) {
+        let result = 0
+        for (let i = start; i < end; i++) {
+            if (trs[i].getElementsByTagName("td")[index].innerText === name) result += 1
+        }
+        return result;
+    }
+
+
     grid_tfoot = (tbody)=> {
         let count = 0
 
@@ -474,7 +426,7 @@ class ScoreTable extends React.Component{
             scoreList.push(sum)
         }
         //총점 평균 점수
-        scoreList.push(scoreList[scoreList.length-1]/(trs.length - count))
+        scoreList.push(scoreList[scoreList.length-1]/(trs.length - count).toFixed(2))
 
         //학점 (A+, B+, 등)
         scoreList.push(this.getScore(scoreList[scoreList.length -1]))
@@ -568,8 +520,6 @@ class ScoreTable extends React.Component{
                 alert("출석 /과제 / 중간 / 기말 한곳이 빠져있습니다.")
                 return true
             }
-        }else{
-            console.log("사랑")
         }
 
         if(this.subjectNameFlag(dict['subjectName'])){
@@ -643,7 +593,7 @@ class ScoreTable extends React.Component{
 
 
                 <thead>
-                <tr className="basic" style={{background : "skyblue"}}>
+                <tr className="basic_head" style={{background : "deepskyblue"}}>
                     <td>선택</td>
                     <td>이수</td>
                     <td>필수</td>

@@ -20,6 +20,11 @@ table thead{
     text-align: center;
 }
 
+.basic_head {
+    color: white;
+    text-align: center;
+}
+
 .bottom {
     text-align: center;
 }

@@ -1,13 +1,13 @@
 // const SetTbody ="<tr><td><input type='text' numberOnly/></td></tr>"
 
 const SetTbody ="<tr class='basic'>" +
-    "<td width='10%'><input type='checkbox' name='selectCK'/></td>" +
-    "<td width='5%'>" +
-        "<select style='width: 75%' name='esu'>" +
+        "<td width='3%'><input type='checkbox' name='selectCK'/></td>" +
+        "<td width='6%'>" +
+        "<select style='width: 80%' name='esu'>" +
             "<option value='전공' selected>전공</option>"+
             "<option value='교양'>교양</option> "+
         "</select>" +
-        "<td width='5%'>" +
+        "<td width='6%'>" +
         "<select style='width: 100%' name='essential'>" +
             "<option value='필수' selected>필수</option>"+
             "<option value='선택'>선택</option> "+
