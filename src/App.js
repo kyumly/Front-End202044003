@@ -307,8 +307,8 @@ class ScoreTable extends React.Component{
         //
         //전공 수
         let test = trs.length - refinement
-        console.log("교양 수 : "+ refinement)
-        console.log("전공 수 : " + test)
+        // console.log("교양 수 : "+ refinement)
+        // console.log("전공 수 : " + test)
         //
         // //교양 선택 수
         let refinement_select
@@ -316,9 +316,9 @@ class ScoreTable extends React.Component{
         this.mySorter(0,refinement, trs, "선택", 2, refinement_select);
         //
         //젠체 교양에서 선택 추출
-        console.log("교양 선택 수 " + refinement_select)
-        //전체 교양에서 선택 빼기 : 필수
-        console.log("교양 필수 수 " + (refinement - refinement_select))
+        // console.log("교양 선택 수 " + refinement_select)
+        // //전체 교양에서 선택 빼기 : 필수
+        // console.log("교양 필수 수 " + (refinement - refinement_select))
         // //
         // // //교양 선택/ 필수 정렬
         this.mySorterNoName(refinement_select,0, trs, 3)
@@ -327,10 +327,10 @@ class ScoreTable extends React.Component{
         //
         let  majorSelect = this.getSortCount(refinement,trs.length, trs, 2, "선택")
         //
-        //전공 선택 수
-        console.log("전공 선택 수 : " + majorSelect)
-        //전공 필수 수
-        console.log("전공 필수 수 : " + ((trs.length-refinement)-majorSelect))
+        // //전공 선택 수
+        // console.log("전공 선택 수 : " + majorSelect)
+        // //전공 필수 수
+        // console.log("전공 필수 수 : " + ((trs.length-refinement)-majorSelect))
         //
         //
         this.mySorter(refinement, trs.length, trs, "선택", 2, (refinement+majorSelect))
@@ -351,13 +351,9 @@ class ScoreTable extends React.Component{
 
     mySorterNoName(start, end, trs,index) {
         for (let i = start-1; i > end; i--) {
-            console.log(i)
             let fCell = trs[i-1].cells[index].innerText
             let sCell = trs[i].cells[index].innerText
-            console.log(fCell)
-            console.log(sCell)
             if (fCell > sCell) {
-                console.log("변경!!")
                 trs[0].parentNode.insertBefore(trs[i], trs[i-1]);
             }
         }
