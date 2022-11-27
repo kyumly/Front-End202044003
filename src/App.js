@@ -9,9 +9,10 @@ class ScoreTable extends React.Component{
         super(props);
         this.state = {
             schoolYear : '0',
-            tableId : 'not',
+            tableId : "",
+            tableTbodyId : "",
             saveMask : 0,
-            result : {}
+            result : {},
         }
     }
 
@@ -20,7 +21,8 @@ class ScoreTable extends React.Component{
     static getDerivedStateFromProps(props, state){
         return {
             schoolYear : props.year,
-            tableId:  "tableId"+props.year
+            tableId:  "tableId"+props.year,
+            tableTbodyId : "tableTbodyId" + props.year
         }
     }
 
@@ -36,8 +38,19 @@ class ScoreTable extends React.Component{
         scoreDict["finalScore"] = 0
         let total = 0;
 
-        $(document).ready(function(){
-            $("input:text[numberOnly]").on("keydown", function() {
+
+        $(document).ready(function(event){
+            // $("input:text[numberOnly]").on("keypress", function() {
+            //     console.log($(this).val())
+            //     let check = /^[0-9]+$/;
+            //     if(!check.test($(this).val() )){
+            //         alert("숫자만 입력 가능합니다.")
+            //         $(this).val($(this).val().replace(/[^0-9]/g,""));
+            //     }else{
+            //         alert("숫자입니다.")
+            //     }
+            // });
+            $("input:text[numberOnly]").on("keyup", function() {
                 $(this).val($(this).val().replace(/[^0-9]/g,""));
             });
 
@@ -188,6 +201,7 @@ class ScoreTable extends React.Component{
         //     return alert("저장버튼을 클릭해주세요")
         // }
 
+        console.log(document)
         let table = document.getElementById(tableId)
         let tbody = table.childNodes[1]
         $(tbody).append(SetTbody)
@@ -249,9 +263,8 @@ class ScoreTable extends React.Component{
         }
 
 
-
-
         this.grid_tfoot(tbody)
+        this.sortting(tbody)
         this.componentDidMount()
 
     }
@@ -297,11 +310,124 @@ class ScoreTable extends React.Component{
                 }
             }
             this.grid_tfoot(body)
+            this.sortting(body)
             this.componentDidMount()
         }
     }
 
 
+    sortting = (tbody) =>{
+        let trs = tbody[0].getElementsByTagName("tr")
+        //교양수
+        let count = 0
+
+        for (let i = 0; i < trs.length; i++) {
+            if(trs[i].getElementsByTagName("td")[1].innerText === "교양") count += 1
+        }
+        console.log((trs.length -1))
+        for (let i = 0; i < (trs.length - 1); i++) {
+            console.log(i)
+            let fCell = trs[i].cells[1].innerText.toString() === "교양" ? 0 : 1;
+            let sCell = trs[i + 1].cells[1].innerText.toString() === "교양" ? 0 : 1
+            if (fCell > sCell) {
+                trs[0].parentNode.insertBefore(trs[i+1], trs[0]);
+             }else if(i === (trs.length -2)){
+                trs[0].parentNode.insertBefore(trs[i+1], trs[count])
+            }
+
+        }
+
+
+
+        //전공 수
+        let test = trs.length - count
+
+        console.log("교양 수 : "+ count)
+        console.log("전공 수 : " + test)
+
+        //교양 선택 수
+        let count2 = 0
+
+        for (let i = 0; i < count; i++) {
+            if(trs[i].getElementsByTagName("td")[2].innerText === "선택") count2 += 1
+        }
+        for(let i=0; i<count-1; i++){
+            let fCell = trs[i].cells[2].innerText.toString() === "선택" ? 0 : 1;
+            let sCell = trs[i + 1].cells[2].innerText.toString() === "선택" ? 0 : 1
+            if (fCell > sCell) {
+                trs[0].parentNode.insertBefore(trs[i+1], trs[0]);
+            }
+        }
+
+        //젠체 교양에서 선택 추출
+        console.log("교양 선택 수 " + count2)
+        //전체 교양에서 선택 빼기 : 필수
+        console.log("교양 필수 수 " + (count - count2))
+
+
+        for(let i=0; i<(count2-1); i++){
+            console.log(i)
+            let fCell = trs[i].cells[3].innerText
+            let sCell = trs[i + 1].cells[3].innerText
+            if (fCell > sCell) {
+                trs[0].parentNode.insertBefore(trs[i+1], trs[i]);
+            }
+        }
+
+
+        for(let i=count2; i<(count-1); i++){
+            console.log(i)
+            let fCell = trs[i].cells[3].innerText
+            let sCell = trs[i + 1].cells[3].innerText
+            if (fCell > sCell) {
+                trs[0].parentNode.insertBefore(trs[i + 1], trs[i]);
+            }
+        }
+
+
+
+
+
+        let  count3 = 0
+        for (let i = count; i < trs.length; i++) {
+            if(trs[i].getElementsByTagName("td")[2].innerText === "선택") count3 += 1
+        }
+        for(let i=count; i<trs.length-1; i++){
+            let fCell = trs[i].cells[2].innerText.toString() === "선택" ? 0 : 1;
+            let sCell = trs[i + 1].cells[2].innerText.toString() === "선택" ? 0 : 1
+            if (fCell > sCell) {
+                trs[0].parentNode.insertBefore(trs[i+1], trs[count]);
+            }
+        }
+
+        console.log("전공 선택 수 : " + count3)
+        console.log("전공 필수 수 : " + ((trs.length-count)-count3))
+
+
+        for(let i=count; i<(count + count3)-1; i++){
+            console.log(i)
+            let fCell = trs[i].cells[3].innerText
+            let sCell = trs[i + 1].cells[3].innerText
+            if (fCell > sCell) {
+                trs[0].parentNode.insertBefore(trs[i+1], trs[i]);
+            }
+        }
+
+
+
+        for(let i=(count + count3); i<trs.length -1; i++){
+            console.log(i)
+            let fCell = trs[i].cells[3].innerText
+            let sCell = trs[i + 1].cells[3].innerText
+            if (fCell > sCell) {
+                trs[0].parentNode.insertBefore(trs[i + 1], trs[i]);
+            }
+        }
+
+
+
+
+    }
     //
     grid_tfoot = (tbody)=> {
         let count = 0
@@ -314,6 +440,7 @@ class ScoreTable extends React.Component{
 
 
 
+        //TR 갯수중에 P/NP 갯수 구하기 (이것은 총점에 반영되면 안된다.)
         for(let i =0; i<trs.length; i++){
             let td = trs[i].getElementsByTagName("td")
             let score =  td[11].innerText
@@ -324,6 +451,9 @@ class ScoreTable extends React.Component{
 
 
         let scoreList = [0,0]
+
+
+        //학점/ 출석점수/ 과제점수 등 점수를 구하기 위한것을 배열처리
         for(let list of sumList){
             let sum = 0
             for(let i =0; i<trs.length; i++){
@@ -343,10 +473,12 @@ class ScoreTable extends React.Component{
             }
             scoreList.push(sum)
         }
-        console.log(trs.length - count)
-
+        //총점 평균 점수
         scoreList.push(scoreList[scoreList.length-1]/(trs.length - count))
+
+        //학점 (A+, B+, 등)
         scoreList.push(this.getScore(scoreList[scoreList.length -1]))
+
 
         if(trs.length === 0){
             for(let i = 2; i<tfoot.length;i++){
@@ -355,7 +487,13 @@ class ScoreTable extends React.Component{
         }else{
             for(let i = 2; i<tfoot.length;i++){
                 tfoot[i].innerText = scoreList[i].toString()
+
             }
+        }
+
+        if(isNaN(scoreList[8])){
+            tfoot[8].innerText = ""
+            tfoot[9].innerText = ""
         }
     }
 
@@ -424,23 +562,6 @@ class ScoreTable extends React.Component{
             alert("출석 + 과제 + 중간 + 기말 점수가 100점 이상입니다")
             flagMask = true
         }
-
-        //점수가 없다면
-        // if(isNaN(parseInt(dict['assignmentScore'])) || isNaN(parseInt(dict['attendanceScore']))
-        //     || isNaN(parseInt(dict['midScore'])) || isNaN(parseInt(dict['finalScore']))){
-        //
-        //     if(dict['StudentScore'].toString().toUpperCase() === "P" || dict['StudentScore'].toString().toUpperCase() === "NP"){
-        //         flagMask = false;
-        //     }else{
-        //         alert("성적란에는 P, NP만 입력이 가능합니다.")
-        //         flagMask = true;
-        //     }
-        // }//점수가 있다면
-        // else if(dict['StudentScore'].toString().toUpperCase() !== "") {
-        //     alert("성적란에는 P, NP만 입력하고 출석, 과제, 중간, 기말 점수아 비어 있어야 합니다.")
-        //     flagMask = true;
-        // }
-
         if(parseInt(dict["credit"]) !== 1){
             if(isNaN(parseInt(dict['assignmentScore'])) || isNaN(parseInt(dict['attendanceScore']))
                      || isNaN(parseInt(dict['midScore'])) || isNaN(parseInt(dict['finalScore']))) {
@@ -460,6 +581,8 @@ class ScoreTable extends React.Component{
 
     }
 
+    //과목이름 중복 체크
+    //배열을 보내면 call-by-Reference
     subjectNameFlag = (subjectInput) =>{
         let one = document.getElementById("tableId1")
         let two = document.getElementById("tableId2")
@@ -475,18 +598,13 @@ class ScoreTable extends React.Component{
         let twoTbody = two.getElementsByTagName("tbody")
         let threeTbody = three.getElementsByTagName("tbody")
 
-        console.log(oneTbody[0].parentNode.id)
-
-
         tableList.push(oneTbody, twoTbody, threeTbody)
 
         for (let table of tableList){
             if(this.state.tableId === table[0].parentNode.id){
                 this.subjectName(table, subjectNameList, table[0].childNodes.length-1);
-
             }else{
                 this.subjectName(table, subjectNameList, table[0].childNodes.length);
-                console.log(subjectNameList)
             }
         }
 
@@ -499,6 +617,7 @@ class ScoreTable extends React.Component{
     }
 
 
+    //과복 중복 체크
     subjectName(table, subjectNameList, size) {
         for (let i = 0; i < size; i++) {
             let name
@@ -520,7 +639,7 @@ class ScoreTable extends React.Component{
                 <input className="button_css" type="button" value="저장" onClick={() => this.setSave(this.state.tableId)}/>
                 <input className="button_css" type="button" value="삭제" onClick={() => this.setDelete(this.state.tableId)}/>
                 <input className="button_css" type="button" value="추가" onClick={() => this.setInsert(this.state.tableId)}/>
-            <table border={1} width={"100%"} id={this.state.tableId}>
+            <table border={1} width={"100%"} id={this.state.tableId} className="tablesorter">
 
 
                 <thead>
@@ -540,7 +659,7 @@ class ScoreTable extends React.Component{
                 </tr>
                 </thead>
 
-                <tbody>
+                <tbody id={this.state.tableTbodyId}>
                 </tbody>
 
                 <tfoot>
