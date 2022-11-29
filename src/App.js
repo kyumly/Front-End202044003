@@ -273,7 +273,7 @@ class ScoreTable extends React.Component{
         if(count === 0){
             return
         }else{
-            mask = window.confirm(count+"건을 삭제하시겠습니까")
+            mask = window.confirm(count+"건을 삭제하시겠습니까?")
         }
 
         //check한거 while을 통해 삭제
