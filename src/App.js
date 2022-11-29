@@ -2,7 +2,7 @@ import React from "react";
 import $ from "jquery";
 import "./Model/Setting.js"
 import SetTbody from "./Model/Setting";
-import StudentScore from "./Model/StudentScore";
+import styles from "./App.css"
 
 class ScoreTable extends React.Component{
     constructor(props) {
@@ -18,6 +18,7 @@ class ScoreTable extends React.Component{
 
 
 
+    // 학년 + 테이블 아아디 + TbodyID
     static getDerivedStateFromProps(props, state){
         return {
             schoolYear : props.year,
@@ -40,7 +41,7 @@ class ScoreTable extends React.Component{
 
 
         $(document).ready(function(event){
-            $("input:text[numberOnly]").on("keyup", function() {
+            $("input:text[numberVal]").on("keyup", function() {
                 $(this).val($(this).val().replace(/[^0-9]/g,""));
             });
 
@@ -179,11 +180,10 @@ class ScoreTable extends React.Component{
     }
 
     setInsert = (tableId) => {
+        //저장 버튼 Flag
         if(this.state.saveMask === 1){
             return alert("저장버튼을 클릭해주세요")
         }
-
-        //console.log(document)
         let table = document.getElementById(tableId)
         let tbody = table.childNodes[1]
         $(tbody).append(SetTbody)
@@ -238,8 +238,6 @@ class ScoreTable extends React.Component{
         if(!td[11].innerText){
             td[9].innerText = sum
             td[11].innerHTML = hakjum
-            //console.log("있음")
-
         }
 
 
@@ -251,6 +249,7 @@ class ScoreTable extends React.Component{
 
     }
 
+    //삭제 메소드
     setDelete = (tableId) =>{
 
         if(this.state.saveMask === 1){
@@ -260,6 +259,7 @@ class ScoreTable extends React.Component{
         let body= document.getElementById(tableId).getElementsByTagName("tbody")
         let tr = document.getElementById(tableId).getElementsByTagName("tbody")[0].getElementsByTagName("tr")
 
+        //체크한거 카운트하기
         let count = 0
         for(let i =0; i<tr.length; i++){
             let mask = tr[i].getElementsByTagName("td")[0].lastChild.checked
@@ -273,9 +273,10 @@ class ScoreTable extends React.Component{
         if(count === 0){
             return
         }else{
-            mask = window.confirm(count+"건을 삭자하시겠습니까")
+            mask = window.confirm(count+"건을 삭제하시겠습니까")
         }
 
+        //check한거 while을 통해 삭제
         if(mask){
             while (true){
                 for(let i =0; i<tr.length; i++){
@@ -307,32 +308,20 @@ class ScoreTable extends React.Component{
         //
         //전공 수
         let test = trs.length - refinement
-        // console.log("교양 수 : "+ refinement)
-        // console.log("전공 수 : " + test)
-        //
+
         // //교양 선택 수
         let refinement_select
         refinement_select = this.getSortCount(0,refinement, trs, 2, "선택", );
         this.mySorter(0,refinement, trs, "선택", 2, refinement_select);
         //
         //젠체 교양에서 선택 추출
-        // console.log("교양 선택 수 " + refinement_select)
-        // //전체 교양에서 선택 빼기 : 필수
-        // console.log("교양 필수 수 " + (refinement - refinement_select))
-        // //
         // // //교양 선택/ 필수 정렬
         this.mySorterNoName(refinement_select,0, trs, 3)
         this.mySorterNoName(refinement,refinement_select , trs, 3)
         //
         //
         let  majorSelect = this.getSortCount(refinement,trs.length, trs, 2, "선택")
-        //
-        // //전공 선택 수
-        // console.log("전공 선택 수 : " + majorSelect)
-        // //전공 필수 수
-        // console.log("전공 필수 수 : " + ((trs.length-refinement)-majorSelect))
-        //
-        //
+
         this.mySorter(refinement, trs.length, trs, "선택", 2, (refinement+majorSelect))
         this.mySorterNoName((refinement + majorSelect), refinement, trs,3)
         this.mySorterNoName(trs.length, (refinement+majorSelect), trs,3)
@@ -349,6 +338,7 @@ class ScoreTable extends React.Component{
         }
     }
 
+    //교양/전공 정렬
     mySorterNoName(start, end, trs,index) {
         for (let i = start-1; i > end; i--) {
             let fCell = trs[i-1].cells[index].innerText
@@ -359,6 +349,7 @@ class ScoreTable extends React.Component{
         }
     }
 
+    //갯수 카운트
     getSortCount(start, end, trs, index, name) {
         let result = 0
         for (let i = start; i < end; i++) {
@@ -399,7 +390,7 @@ class ScoreTable extends React.Component{
                 let td = trs[i].getElementsByTagName("td")
                 let score =  td[11].innerText
                 if(score === "NP"){
-                    break
+                    continue
                 }else{
                     if(score === "P"){
                         if(list === 4){

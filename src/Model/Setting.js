@@ -1,5 +1,3 @@
-// const SetTbody ="<tr><td><input type='text' numberOnly/></td></tr>"
-
 const SetTbody ="<tr class='basic'>" +
         "<td width='3%'><input type='checkbox' name='selectCK'/></td>" +
         "<td width='6%'>" +
@@ -24,16 +22,16 @@ const SetTbody ="<tr class='basic'>" +
             "</select>" +
         "</td>" +
         "<td>" +
-            "<input type='text' name='attendance' readonly style='width: 90%; background-color: gray' numberOnly >"+
+            "<input type='text' name='attendance' readonly style='width: 90%; background-color: gray' numberVal >"+
         "</td>" +
         "<td>" +
-            "<input type='text' name='assignment' readonly style='width: 90%; background-color: gray' numberOnly>"+
+            "<input type='text' name='assignment' readonly style='width: 90%; background-color: gray' numberVal>"+
         "</td>" +
         "<td>" +
-            "<input type='text' name='midScore' readonly style='width: 90%; background-color: gray' numberOnly>"+
+            "<input type='text' name='midScore' readonly style='width: 90%; background-color: gray' numberVal>"+
         "</td>" +
         "<td>" +
-            "<input type='text' name='finalScore' readonly style='width: 90%; background-color: gray' numberOnly>"+
+            "<input type='text' name='finalScore' readonly style='width: 90%; background-color: gray' numberVal>"+
         "</td>" +
         "<td width='5%'></td>" +
         "<td width='5%'></td>" +
